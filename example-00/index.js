@@ -12,7 +12,7 @@ async function trainModel(inputXs, outputYs) {
       // 80 neurônios => aqui coloquei tudo isso, pq tem pouca base de treinamento
       // quanto mais neurônios, mais complexidade a rede pode aprender
       // e consequentemente mais processamento ela vai usar
-      units: 80, // quantidade de neurônios
+      units: 100, // quantidade de neurônios
 
       // A ReLU age como um filtro:
       // /e como se ela deixasse somente os dados interessantes seguirem viagem
@@ -71,14 +71,30 @@ async function trainModel(inputXs, outputYs) {
      * dos dados, e sim os padrões
      */
     shuffle: true,
-    callbacks: {
-      onEpochEnd: (epoch, log) => {
-        // console.log(`Epoch: ${epoch}: loss = ${log.loss}`);
-      },
-    },
+    // callbacks: {
+    //   onEpochEnd: (epoch, log) => {
+    //     console.log(`Epoch: ${epoch}: loss = ${log.loss}`);
+    //   },
+    // },
   });
 
   return model;
+}
+
+async function predict(model, pessoa) {
+  /**
+   * Transformar o array js para tensor (tsjs)
+   */
+
+  const tfInput = tf.tensor2d(pessoa);
+  /**
+   * Faz a predição ( o output será um vetor de 3 probabilidades)
+   */
+
+  const pred = model.predict(tfInput);
+  const predArray = await pred.array();
+
+  return predArray[0].map((prob, index) => ({ prob, index }));
 }
 
 const tensorPessoasNormalizado = [
@@ -87,7 +103,7 @@ const tensorPessoasNormalizado = [
   [1, 0, 0, 1, 0, 0, 1], // Carlos
 ];
 
-const labelsNomes = ["premium", "medium", "basic"];
+const labelsNomes = ["Premium", "Medium", "Basic"];
 const tensorLabels = [
   [1, 0, 0], // Erick
   [0, 1, 0], // Ana
@@ -104,4 +120,37 @@ const outputYs = tf.tensor2d(tensorLabels);
  * Quanto mais dado melhor, assim o algoritmo consegue
  * entender melhor os padrões complexos dos dados.
  */
-const model = trainModel(inputXs, outputYs);
+const model = await trainModel(inputXs, outputYs);
+
+const pessoa = {
+  nome: "zé",
+  idade: 28,
+  cor: "verde",
+  localizacao: "Curitiba",
+};
+
+/**
+ * Normalizando a idade da nova pessoa usando o mesmo padrão do treino
+ * Exemplo: idade min = 25, idade_max = 40, então (28 - 25) / (40 - 25) = 0.2
+ */
+
+const pessoaTensorNormalizado = [
+  [
+    0.2, // idade normalizada
+    1, // cor azul
+    0, // cor vermelho
+    0, // cor verde
+    0, // localização São Paulo
+    1, // localização Rio
+    0, // localização Curitiba
+  ],
+];
+
+const predictions = await predict(model, pessoaTensorNormalizado);
+
+const results = predictions
+  .sort((a, b) => b.prob - a.prob)
+  .map((prob) => `- ${labelsNomes[[prob.index]]} (${(prob.prob * 100).toFixed(2)}%)`)
+  .join("\n");
+
+console.log(results);
