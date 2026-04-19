@@ -18,9 +18,9 @@ const WEIGHTS = {
  */
 const normalize = (val, min, max) => (val - min) / (max - min || 1);
 
-function makeContext(catalog, users) {
+function makeContext(products, users) {
   const ages = users.map((user) => user.age);
-  const prices = catalog.map((p) => p.price);
+  const prices = products.map((p) => p.price);
 
   const minAge = Math.min(...ages);
   const maxAge = Math.max(...ages);
@@ -29,8 +29,8 @@ function makeContext(catalog, users) {
   const maxPrice = Math.max(...prices);
 
   // New Set para garantir que não tenha itens duplicados.
-  const colors = [...new Set(catalog.map((p) => p.color))];
-  const categories = [...new Set(catalog.map((p) => p.category))];
+  const colors = [...new Set(products.map((p) => p.color))];
+  const categories = [...new Set(products.map((p) => p.category))];
 
   const colorsIndex = Object.fromEntries(colors.map((color, index) => [color, index]));
   const categoriesIndex = Object.fromEntries(categories.map((category, index) => [category, index]));
@@ -51,7 +51,7 @@ function makeContext(catalog, users) {
   });
 
   const productAvgAgeNorm = Object.fromEntries(
-    catalog.map((product) => {
+    products.map((product) => {
       /**
        * Se não tiver um registro de idade para um produto, usar a idade média geral (midAge) como fallback.
        */
@@ -62,7 +62,7 @@ function makeContext(catalog, users) {
   );
 
   return {
-    catalog,
+    products,
     users,
     colorsIndex,
     categoriesIndex,
@@ -96,16 +96,69 @@ function encodeProduct(product, context) {
   return tf.concat([price, age, category, color]);
 }
 
+/**
+ * Retornar o perfil de compra do usuário.
+ */
+
+function encodeUser(user, context) {
+  /**
+   * Tensor para todos os usuários que possui compras.
+   */
+  if (user.purchases.length) {
+    // Cada linha que tiver vai ser uma compra do usuário
+    return tf
+      .stack(user.purchases.map((purchase) => encodeProduct(purchase, context)))
+      .mean(0) // Média dos vetores para retornar apenas um valor
+      .reshape([
+        1, // um linha no shape
+        context.dimensions, // colunas
+      ]);
+  }
+}
+
+function createTrainingData(context) {
+  const inputs = [];
+  const labels = [];
+
+  context.users.forEach((user) => {
+    const userVector = encodeUser(user, context).dataSync();
+    context.products.forEach((product) => {
+      const productVector = encodeProduct(product, context).dataSync();
+      // 1 se comprou, 0 caso contrário
+      const label = user.purchases.some((purchase) => purchase.name === product.name) ? 1 : 0;
+
+      // Combinar usuário + product
+      inputs.push([...userVector, ...productVector]);
+      labels.push(label);
+    });
+  });
+
+  return {
+    xs: tf.tensor2d(inputs), // Input
+    ys: tf.tensor2d(labels, [
+      labels.length, // Tamanho das dimensões
+      1,
+    ]), // Como ele deve
+    inputDimensions: context.dimensions * 2, // Porque estamos combinando usuário + produto
+  };
+}
+
 async function trainModel({ users }) {
   console.log("Training model with users:", users);
 
   postMessage({ type: workerEvents.progressUpdate, progress: { progress: 50 } });
 
-  const catalog = await (await fetch("/data/products.json")).json();
+  const products = await (await fetch("/data/products.json")).json();
 
-  const context = makeContext(catalog, users);
+  const context = makeContext(products, users);
 
-  context.productVectors = catalog.map((product) => {
+  /**
+   * DICA: para grandes projetos os vetores devem
+   * ser armazenados em bancos de dados para ser apenas consumidos
+   * e não processar do lado do cliente onde pode causar lentidão
+   * com o processamento.
+   */
+  context.productVectors = products.map((product) => {
     return {
       name: product.name,
       meta: {
@@ -115,9 +168,16 @@ async function trainModel({ users }) {
     };
   });
 
-  debugger;
-
+  /***
+   * OBS:. Os dados estão sendo armazenados de forma global apenas para serem
+   * acessados posteriormente mas em um caso real esses dados veriam do banco de
+   * dados.
+   */
   _globalCtx = context;
+
+  const trainData = createTrainingData(context);
+
+  debugger;
 
   postMessage({
     type: workerEvents.trainingLog,
