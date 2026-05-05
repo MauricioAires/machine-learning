@@ -369,3 +369,15 @@ self.onmessage = (e) => {
   const { action, ...data } = e.data;
   if (handlers[action]) handlers[action](data);
 };
+
+/**
+ * Recomendação
+ *
+ * Utilizar o banco de dados CromaDB [https://www.trychroma.com/]
+ * para armazenar os vetores, um banco de dados especializado para isso, e utilizar o modelo apenas para gerar os vetores de usuário e produto.
+ *
+ * 1. Fazer uma request com 100 registros mais próximo do vetor e rodar
+ * o comando _model.predict() apenas nesses registros para otimizar o processo.
+ *
+ * 2. Para não fazer dados fictícios, podemos utilizar dados reais de e-commerce como o dataset da Amazon disponível no Kaggle [https://www.kaggle.com/datasets/snap/amazon-fine-food-reviews] ou o dataset de produtos do * Walmart [https://www.kaggle.com/datasets/c/walmart-recruiting-store-sales-forecasting]. Esses datasets possuem informações sobre produtos, usuários e suas interações, permitindo treinar um modelo de recomendação mais * realista.
+ * */
