@@ -1,0 +1,76 @@
+<output id="output"></output>
+<script src="https://cdn.jsdelivr.net/npm/markdown@0.5.0/lib/markdown.min.js"></script>
+
+<!-- <button id="start">Baixar modelo</button>
+
+<script>
+  document.getElementById("start").addEventListener("click", async () => {
+    const session = await LanguageModel.create();
+    console.log(session);
+  });
+</script> -->
+
+<!-- const availability = await LanguageModel.availability();
+console.log(availability); -->
+<!--
+Quando o estado é "downloadable" (ou "downloading"), o navegador
+ exige que LanguageModel.create() seja chamado a partir
+ de uma ação explícita do usuário, como um clique em um botão. -->
+
+<script>
+  const output = document.getElementById("output");
+
+  (async () => {
+    output.innerHTML = "Gerando a resposta...";
+
+    const availability = await LanguageModel.availability();
+    console.log("Language Model Availability: ", availability);
+
+    let temperature = 0.7;
+    let topK = 40;
+
+    if (LanguageModel.params) {
+      const params = await LanguageModel.params();
+      console.log("Language Model Params:", params);
+
+      temperature = params.defaultTemperature ?? temperature;
+      topK = params.defaultTopK ?? topK;
+    }
+
+    const initialPrompts = [
+      {
+        role: "system",
+        content: "Você é um assistente de IA que responde de forma clara e objetiva",
+      },
+    ];
+
+    const question = "Quem invetou o JavaScript?";
+
+    const session = await LanguageModel.create({
+      expectedInputLanguages: ["pt"],
+      temperature,
+      topK,
+      initialPrompts,
+    });
+
+    const respondeStream = await session.promptStreaming([
+      {
+        role: "user",
+        content: question,
+      },
+    ]);
+
+    output.innerHTML = "";
+    let fullText = "";
+    for await (const token of respondeStream) {
+      fullText += token;
+
+      output.innerHTML = markdown.toHTML(fullText);
+
+      console.log(token);
+    }
+  })();
+</script>
+
+<!-- chrome://flags/ -->
+<!-- chrome://on-device-internals/ -->
