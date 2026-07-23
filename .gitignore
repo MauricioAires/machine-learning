@@ -3,3 +3,9 @@ node_modules/
 
 # Temp
 engenharia-de-software-com-ia-aplicada
+
+.next
+
+.env.local
+
+better-auth.sqlite
