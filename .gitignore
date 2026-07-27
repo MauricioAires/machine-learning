@@ -9,3 +9,5 @@ engenharia-de-software-com-ia-aplicada
 .env.local
 
 better-auth.sqlite
+
+**/.env
