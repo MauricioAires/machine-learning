@@ -29,3 +29,8 @@ Porque embedding são tão importantes?
 Porque K-top existe?
 Como uma banco vetorial pensa?
 Porque embedding vira a fundação do RAG?
+
+Para acessar o banco de dados neo4j basta acessar o endereço: [http://localhost:7474](http://localhost:7474/browser/)
+
+- Dado um documento em PDF quebrou ele em chunks e salvou ele como embbeding no banco de dados Neo4j
+- Com esses dados podemos buscar chunk similares a pergunta.
