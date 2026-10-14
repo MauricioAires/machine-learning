@@ -1,0 +1,166 @@
+body {
+  min-height: 100vh;
+  padding: 24px 0 48px;
+  background:
+    radial-gradient(circle at top left, rgba(62, 111, 173, 0.16), transparent 30%), radial-gradient(circle at top right, rgba(15, 23, 42, 0.18), transparent 26%), linear-gradient(180deg, #f7f9fc 0%, #eef3f9 100%);
+}
+
+.container-xxl {
+  max-width: 1600px;
+}
+
+.main {
+  padding: 0 20px;
+}
+
+.hero-shell {
+  position: relative;
+  overflow: hidden;
+  padding: 28px 30px;
+  border-radius: 24px;
+  color: #f8fafc;
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 55%, #334155 100%);
+  box-shadow: 0 20px 50px rgba(15, 23, 42, 0.18);
+}
+
+.hero-shell::after {
+  content: "";
+  position: absolute;
+  inset: auto -40px -80px auto;
+  width: 240px;
+  height: 240px;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(96, 165, 250, 0.32), transparent 70%);
+  pointer-events: none;
+}
+
+.hero-copy {
+  position: relative;
+  z-index: 1;
+}
+
+.eyebrow {
+  margin-bottom: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  font-size: 0.75rem;
+  color: #93c5fd;
+}
+
+.hero-shell h1 {
+  font-size: clamp(2rem, 4vw, 3.4rem);
+  font-weight: 800;
+}
+
+.hero-shell .lead {
+  max-width: 760px;
+  color: rgba(226, 232, 240, 0.9);
+}
+
+.risk-card {
+  border: none;
+  border-radius: 22px;
+  overflow: hidden;
+  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.08);
+}
+
+.risk-card-header {
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  color: #fff;
+  padding: 18px 22px;
+  border-bottom: 0;
+}
+
+.risk-card .card-body {
+  padding: 22px;
+}
+
+.risk-card .form-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.risk-card .form-control {
+  border-radius: 14px;
+  padding: 0.75rem 0.9rem;
+}
+
+.risk-card .btn {
+  border-radius: 999px;
+  padding: 0.7rem 1.1rem;
+}
+
+.risk-result {
+  padding: 18px;
+  border-radius: 18px;
+  background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+  border: 1px solid rgba(148, 163, 184, 0.22);
+}
+
+.risk-score {
+  font-size: clamp(2.8rem, 6vw, 4.5rem);
+  font-weight: 800;
+  line-height: 1;
+  color: #0f172a;
+}
+
+.training-status {
+  padding: 18px;
+  border-radius: 18px;
+  background: #f8fafc;
+  border: 1px solid rgba(148, 163, 184, 0.22);
+}
+
+.training-progress {
+  height: 10px;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.training-progress .progress-bar {
+  background: linear-gradient(90deg, #2563eb, #14b8a6);
+}
+
+.training-table-wrap {
+  max-height: 760px;
+  overflow: auto;
+}
+
+.training-table {
+  margin-bottom: 0;
+}
+
+.training-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: #0f172a;
+  color: #fff;
+  white-space: nowrap;
+  font-size: 0.82rem;
+}
+
+.training-table td,
+.training-table th {
+  white-space: nowrap;
+  font-size: 0.88rem;
+}
+
+.training-table tbody tr:hover {
+  background-color: rgba(37, 99, 235, 0.05);
+}
+
+.training-table .badge {
+  font-weight: 700;
+}
+
+@media (max-width: 991px) {
+  .main {
+    padding: 0 12px;
+  }
+
+  .hero-shell {
+    padding: 22px;
+  }
+}
