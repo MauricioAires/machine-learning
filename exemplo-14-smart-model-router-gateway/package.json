@@ -1,0 +1,18 @@
+{
+  "name": "exemplo-14-smart-model-router-gateway",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "node --inspect --watch src/index.ts",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "dependencies": {
+    "@types/node": "^24.19.2",
+    "fastify": "^5.7.4"
+  }
+}
