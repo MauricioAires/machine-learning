@@ -1,0 +1,58 @@
+import { OpenRouter } from "@openrouter/sdk";
+import { config, type ModelConfig } from "./config.ts";
+import { type ChatGenerationParams } from "@openrouter/sdk/models";
+
+export type LLMResponse = {
+  model: string;
+  content: string;
+};
+
+export class OpenRouterService {
+  private client: OpenRouter;
+  private config: ModelConfig;
+  constructor(configOverride?: ModelConfig) {
+    this.config = configOverride ?? config;
+
+    this.client = new OpenRouter({
+      apiKey: this.config.apiKey,
+      httpReferer: this.config.httpReferer,
+      xTitle: this.config.xTitle,
+    });
+  }
+
+  async generate(prompt: string): Promise<LLMResponse> {
+    const response = await this.client.chat.send({
+      models: this.config.models,
+      /**
+       * aqui é onde fica o histórico
+       */
+      messages: [
+        /**
+         *  O primeiro é SEMPRE as regras e segundo o usuário
+         */
+        {
+          role: "system",
+          content: this.config.systemPrompt,
+        },
+        {
+          role: "user",
+          content: prompt,
+        },
+      ],
+      // retorna toda a mensagem de uma só vez
+      stream: false,
+      temperature: this.config.temperature,
+      maxTokens: this.config.maxTokens,
+      provider: this.config.provider as ChatGenerationParams["provider"],
+    });
+
+    // console.log(response.choices.at(0)?.message);
+
+    const content = String(response.choices.at(0)?.message.content) ?? "";
+
+    return {
+      model: response.model,
+      content,
+    };
+  }
+}

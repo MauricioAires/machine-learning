@@ -7,3 +7,5 @@ Typescript sem transpiller.
 O comando --inspect no script abre a porta de debug
 
 Depurar é melhor quer console.
+
+[Open Router](https://openrouter.ai/)
