@@ -12,9 +12,10 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
+  "type": "module",
   "dependencies": {
     "@langchain/core": "^1.1.19",
-    "@types/node": "^24.19.4",
+    "@types/node": "^24.10.13",
     "fastify": "^5.7.4",
     "langchain": "^1.2.17"
   }
